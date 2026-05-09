@@ -8,3 +8,8 @@ coverage
 .DS_Store
 *.tsbuildinfo
 .convex
+.omx/state
+.omx/logs
+.omx/metrics.json
+.omx/tmux-hook.json
+.omx/hud-config.json
