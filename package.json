@@ -1,0 +1,53 @@
+{
+  "name": "newsletter-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "convex:dev": "convex dev",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "next build"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "latest",
+    "@clerk/clerk-react": "latest",
+    "@tiptap/extension-blockquote": "latest",
+    "@tiptap/extension-bold": "latest",
+    "@tiptap/extension-bullet-list": "latest",
+    "@tiptap/extension-document": "latest",
+    "@tiptap/extension-hard-break": "latest",
+    "@tiptap/extension-heading": "latest",
+    "@tiptap/extension-image": "latest",
+    "@tiptap/extension-italic": "latest",
+    "@tiptap/extension-link": "latest",
+    "@tiptap/extension-list-item": "latest",
+    "@tiptap/extension-ordered-list": "latest",
+    "@tiptap/extension-paragraph": "latest",
+    "@tiptap/extension-text": "latest",
+    "@tiptap/react": "latest",
+    "@tiptap/starter-kit": "latest",
+    "convex": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "resend": "latest"
+  },
+  "devDependencies": {
+    "@eslint/js": "latest",
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "globals": "latest",
+    "jsdom": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest",
+    "vitest": "latest"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
