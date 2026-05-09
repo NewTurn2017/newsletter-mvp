@@ -13,3 +13,4 @@ coverage
 .omx/metrics.json
 .omx/tmux-hook.json
 .omx/hud-config.json
+.omx/reports
