@@ -18,23 +18,23 @@ export function SubscriberForm() {
       onSubmit={(event) => {
         event.preventDefault();
         if (!isValidEmail(normalized)) {
-          setMessage("Enter a valid email address.");
+          setMessage("올바른 이메일 주소를 입력해주세요.");
           return;
         }
         startTransition(async () => {
           try {
             await createSubscriber({ email: normalized });
             setEmail("");
-            setMessage("Subscriber saved.");
+            setMessage("구독자를 저장했습니다.");
           } catch (error) {
-            setMessage(error instanceof Error ? error.message : "Unable to save subscriber");
+            setMessage(error instanceof Error ? error.message : "구독자를 저장할 수 없습니다.");
           }
         });
       }}
     >
-      <h2>Add active subscriber</h2>
-      <label>Email<input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="reader@example.com" /></label>
-      <button disabled={isPending || !isValidEmail(normalized)}>{isPending ? "Saving..." : "Add subscriber"}</button>
+      <h2>활성 구독자 추가</h2>
+      <label>이메일<input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="reader@example.com" /></label>
+      <button disabled={isPending || !isValidEmail(normalized)}>{isPending ? "저장 중..." : "구독자 추가"}</button>
       {message ? <p className="helper">{message}</p> : null}
     </form>
   );

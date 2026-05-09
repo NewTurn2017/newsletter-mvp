@@ -13,7 +13,7 @@ const doc: TiptapDoc = {
     { type: "orderedList", content: [{ type: "listItem", content: [{ type: "paragraph", content: [{ type: "text", text: "First" }] }] }] },
     { type: "blockquote", content: [{ type: "paragraph", content: [{ type: "text", text: "Quote" }] }] },
     { type: "paragraph", content: [{ type: "text", text: "Line" }, { type: "hardBreak" }, { type: "text", text: "Break" }] },
-    { type: "image", attrs: { src: "https://example.com/image.jpg", alt: "Example" } },
+    { type: "image", attrs: { src: "https://example.com/image.jpg", alt: "Example", width: 360 } },
   ],
 };
 
@@ -28,6 +28,7 @@ describe("Tiptap renderers", () => {
     expect(html).toContain("<blockquote><p>Quote</p></blockquote>");
     expect(html).toContain("Line<br />Break");
     expect(html).toContain('src="https://example.com/image.jpg"');
+    expect(html).toContain('style="width:360px;max-width:100%;height:auto;border-radius:12px;"');
   });
 
   it("drops unsafe image and link URLs", () => {

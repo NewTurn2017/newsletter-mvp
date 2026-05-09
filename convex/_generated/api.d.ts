@@ -8,8 +8,10 @@
  * @module
  */
 
+import type * as aiSlug from "../aiSlug.js";
 import type * as articles from "../articles.js";
 import type * as emailSends from "../emailSends.js";
+import type * as files from "../files.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_email from "../lib/email.js";
 import type * as lib_slug from "../lib/slug.js";
@@ -23,8 +25,10 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  aiSlug: typeof aiSlug;
   articles: typeof articles;
   emailSends: typeof emailSends;
+  files: typeof files;
   "lib/auth": typeof lib_auth;
   "lib/email": typeof lib_email;
   "lib/slug": typeof lib_slug;

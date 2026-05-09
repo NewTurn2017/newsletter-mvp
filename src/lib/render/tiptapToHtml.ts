@@ -5,6 +5,13 @@ import { escapeHtml, safeImageUrl, safeUrl } from "./sanitize";
 const supportedNodes = new Set(["doc", "paragraph", "heading", "text", "bulletList", "orderedList", "listItem", "blockquote", "hardBreak", "image"]);
 const supportedMarks = new Set(["bold", "italic", "link"]);
 
+function safeImageWidth(value: unknown): number | null {
+  if (typeof value !== "number" && typeof value !== "string") return null;
+  const parsed = typeof value === "number" ? value : Number.parseInt(value.replace("px", ""), 10);
+  if (!Number.isFinite(parsed)) return null;
+  return Math.min(Math.max(Math.round(parsed), 120), 960);
+}
+
 function renderChildren(node: TiptapNode): string {
   return (node.content ?? []).map(renderNode).join("");
 }
@@ -45,7 +52,9 @@ function renderNode(node: TiptapNode): string {
       const src = safeImageUrl(node.attrs?.src);
       if (!src) return "";
       const alt = typeof node.attrs?.alt === "string" ? node.attrs.alt : "";
-      return `<figure><img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" style="max-width:100%;height:auto;border-radius:12px;" /></figure>`;
+      const width = safeImageWidth(node.attrs?.width);
+      const widthStyle = width ? `width:${width}px;` : "";
+      return `<figure><img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" style="${widthStyle}max-width:100%;height:auto;border-radius:12px;" /></figure>`;
     }
     default: return renderChildren(node);
   }

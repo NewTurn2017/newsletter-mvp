@@ -3,7 +3,8 @@ import { Resend } from "resend";
 export async function sendNewsletterEmail(input: { to: string; subject: string; html: string; text: string }) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL ?? "Newsletter <onboarding@resend.dev>";
-  if (!apiKey || process.env.RESEND_MOCK === "1") return { id: `mock_${Date.now()}` };
+  if (process.env.RESEND_MOCK === "1") return { id: `mock_${Date.now()}` };
+  if (!apiKey) throw new Error("RESEND_API_KEY is not set in the Convex environment. Set it with `npx convex env set RESEND_API_KEY` or enable explicit local dry-run with RESEND_MOCK=1.");
   const resend = new Resend(apiKey);
   const result = await resend.emails.send({ from, ...input });
   if (result.error) throw new Error(result.error.message);

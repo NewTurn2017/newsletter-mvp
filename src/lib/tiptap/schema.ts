@@ -11,7 +11,37 @@ import { ListItem } from "@tiptap/extension-list-item";
 import { OrderedList } from "@tiptap/extension-ordered-list";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { Text } from "@tiptap/extension-text";
+import { ReactNodeViewRenderer } from "@tiptap/react";
+import { ResizableImageNodeView } from "../../components/editor/ResizableImageNodeView";
 export { isTiptapDoc } from "../render/tiptapTypes";
+
+function parseImageWidth(element: HTMLElement) {
+  const width = element.getAttribute("width") ?? element.style.width;
+  if (!width) return null;
+  const parsed = Number.parseInt(width.replace("px", ""), 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+const StoredImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      storageId: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("data-storage-id"),
+        renderHTML: (attributes) => attributes.storageId ? { "data-storage-id": attributes.storageId } : {},
+      },
+      width: {
+        default: null,
+        parseHTML: parseImageWidth,
+        renderHTML: (attributes) => attributes.width ? { width: attributes.width, style: `width:${attributes.width}px;max-width:100%;height:auto;` } : {},
+      },
+    };
+  },
+  addNodeView() {
+    return ReactNodeViewRenderer(ResizableImageNodeView);
+  },
+});
 
 export const newsletterTiptapExtensions = [
   Document,
@@ -26,5 +56,5 @@ export const newsletterTiptapExtensions = [
   ListItem,
   Blockquote,
   HardBreak,
-  Image.configure({ inline: false, allowBase64: false }),
+  StoredImage.configure({ inline: false, allowBase64: false }),
 ];

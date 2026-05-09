@@ -19,14 +19,14 @@ export function SendArticleButton({ articleId, disabled }: { articleId: string; 
             setMessage(null);
             try {
               const result = await sendArticle({ articleId: articleId as any });
-              setMessage(`Send complete: ${result.sent} sent, ${result.failed} failed, ${result.skipped} skipped.`);
+              setMessage(`발송 완료: 성공 ${result.sent}명, 실패 ${result.failed}명, 건너뜀 ${result.skipped}명`);
             } catch (error) {
-              setMessage(error instanceof Error ? error.message : "Send failed");
+              setMessage(error instanceof Error ? error.message : "메일 발송에 실패했습니다.");
             }
           });
         }}
       >
-        {isPending ? "Sending..." : "Send published article"}
+        {isPending ? "발송 중..." : "공개 글 메일 발송"}
       </button>
       {message ? <p className="helper">{message}</p> : null}
     </div>

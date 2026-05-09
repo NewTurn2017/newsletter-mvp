@@ -7,6 +7,7 @@ export default defineSchema({
     slug: v.string(),
     excerpt: v.optional(v.string()),
     editorJson: v.any(),
+    coverImageId: v.optional(v.id("_storage")),
     coverImageUrl: v.optional(v.string()),
     status: v.union(v.literal("draft"), v.literal("published"), v.literal("sent")),
     publishedAt: v.optional(v.number()),

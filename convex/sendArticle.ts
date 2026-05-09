@@ -4,7 +4,8 @@ import { action } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { requireAdmin } from "./lib/auth";
 import { sendNewsletterEmail } from "./lib/email";
-import { sendArticleWorkflow } from "../src/lib/email/sendArticleWorkflow";
+import { sendArticleWorkflow, type ArticleForSend } from "../src/lib/email/sendArticleWorkflow";
+import { isTiptapDoc } from "../src/lib/tiptap/types";
 
 export const sendArticle = action({
   args: { articleId: v.id("articles") },
@@ -14,7 +15,12 @@ export const sendArticle = action({
 
     return sendArticleWorkflow<Id<"articles">, Id<"subscribers">, Id<"emailSends">>(
       {
-        getArticle: async () => ctx.runQuery(api.articles.getForSend, { articleId: args.articleId }),
+        getArticle: async () => {
+          const article = await ctx.runQuery(api.articles.getForSend, { articleId: args.articleId });
+          if (!article) return null;
+          if (!isTiptapDoc(article.editorJson)) throw new Error("편집기 내용을 메일로 렌더링할 수 없습니다.");
+          return article as ArticleForSend<Id<"articles">>;
+        },
         listActiveSubscribers: async () => ctx.runQuery(api.subscribers.listActive, {}),
         findExistingSend: async (subscriber) =>
           ctx.runQuery(api.emailSends.findForArticleRecipient, {
