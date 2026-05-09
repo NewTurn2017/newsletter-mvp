@@ -4,16 +4,17 @@ Canonical source: `.omx/plans/ralplan-newsletter-system-mvp.md`.
 
 ## Review status
 
-The workspace contains the newsletter MVP scaffold and implementation. Fresh worker-3 checks on 2026-05-09 13:34 UTC are green for lint, typecheck, unit/integration tests, and production build, but the review found Convex runtime-contract risks that static checks do not catch because `convex/_generated/api.ts` currently exposes `internal` as `AnyApi`.
+Final worker-3 refresh after the leader's Convex send-flow fixes: the implementation now aligns much more closely with the canonical MVP plan. Fresh local checks for lint/typecheck/test are green, and the leader reported a green production build after the fixes. A local build rerun in this worker is currently blocked by an existing `.next/dev/lock` from a running Next dev process, not by a compile failure.
 
 ## Current implementation review findings
 
-- `convex/sendArticle.ts:29-40` vs `convex/articles.ts:32-35`, `convex/subscribers.ts:20-23`, `convex/emailSends.ts:13-44` — **High** — the send action calls `internal.articles.getPublishedForSend`, `internal.subscribers.listActiveForSend`, `internal.emailSends.findForArticleRecipient`, and `internal.emailSends.createPending`, but the current Convex files export `getForSend`, `listActive`, `ensurePending`, `markSent`, and `markFailed` instead. Because the generated API is `AnyApi`, `pnpm typecheck` does not catch this; the first real Convex send can fail at runtime unless the function names are aligned.
-- `convex/sendArticle.ts:17-22` vs `convex/emailSends.ts:27-44` — **High** — `sendArticle.ts` passes `{ emailSendId }` to `markSent`/`markFailed`, while the mutations expect `{ sendId }`. This is another runtime mismatch hidden by the loose generated API.
-- `convex/articles.ts:32-35` — **Medium/High** — `getForSend` returns any article by id and does not verify `status === "published"`; the canonical plan requires send rejection for unpublished articles at the Convex send boundary.
-- `convex/lib/auth.ts:7-17` — **Medium** — `requireAdmin` allows any signed-in email when `ADMIN_EMAILS` is unset. That is workable for local setup, but production should fail closed or require explicit admin configuration.
-- `tests/integration/send-flow.test.ts:14-31` — **Medium** — current send-flow coverage checks helper/idempotency primitives and email payload rendering, but does not execute `sendArticleWorkflow` or the Convex action wiring. Add a mock-provider workflow test that proves unpublished rejection, pending-before-provider, sent/failed transitions, duplicate skip, unsubscribed exclusion, and article `sent` marking.
-- Non-goal search across source files found no implementation of multi-tenant workspace, billing/pricing, CRM segmentation/automation, advanced analytics, approval workflow, or first-party upload/storage.
+- `convex/sendArticle.ts:8-43` — **Resolved from prior review** — send orchestration remains in the canonical Convex action boundary and now calls the exported `api.articles.getForSend`, `api.subscribers.listActive`, `api.emailSends.findForArticleRecipient`, `api.emailSends.ensurePending`, `api.emailSends.markSent`, and `api.emailSends.markFailed` names.
+- `convex/sendArticle.ts:30-35` and `convex/emailSends.ts:35-52` — **Resolved from prior review** — send status mutations now use the same `sendId` argument shape.
+- `convex/articles.ts:32-37` and `src/lib/email/sendArticleWorkflow.ts:41-45` — **Resolved from prior review** — send eligibility is now filtered to `published` or `sent`, and the workflow rejects missing/draft articles before provider calls.
+- `tests/integration/send-flow.test.ts:33-111` — **Improved** — tests now exercise unpublished rejection, pending creation before provider calls, sent/pending duplicate skips, retry of failed sends, provider failure recording, and article `sent` marking after a successful recipient.
+- `convex/lib/auth.ts:7-17` — **Medium remaining risk** — `requireAdmin` allows any signed-in email when `ADMIN_EMAILS` is unset. This is acceptable for local/demo setup only if documented; production should require explicit admin configuration or fail closed.
+- `convex/emailSends.ts:13-19` and `convex/subscribers.ts:20-23` — **Low/Medium review note** — send-path helper queries are intentionally callable by the Convex action, but they do not call `requireAdmin` themselves. Keep them private-by-convention to the send action or convert to generated internal functions before production hardening.
+- Source-only non-goal scan found no implementation of multi-tenant workspace, billing/pricing, CRM segmentation/automation, advanced analytics, approval workflow, or first-party upload/storage.
 
 ## Required review gates
 
@@ -24,6 +25,7 @@ Review files:
 - `convex/sendArticle.ts`
 - `convex/emailSends.ts`
 - `convex/lib/auth.ts`
+- `src/lib/email/sendArticleWorkflow.ts`
 - any Resend wrapper used by the action
 
 Pass criteria:
@@ -33,7 +35,8 @@ Pass criteria:
 - Pending records are created/reused before Resend calls.
 - Article-recipient idempotency is enforced by an index/query, not by UI state.
 - Status transitions are explicit and inspectable: `pending -> sent` or `pending -> failed`.
-- Internal Convex function names and argument names match the exported functions.
+- Internal/API function names and argument names match the exported functions.
+- Draft/unpublished articles are rejected before provider calls.
 
 ### 2. Pure TypeScript rendering
 

@@ -2,47 +2,48 @@
 
 Canonical source: `.omx/plans/ralplan-newsletter-system-mvp.md`.
 
-## Current worker-3 verification — 2026-05-09 13:34 UTC
+## Current worker-3 verification refresh — 2026-05-09 13:38 UTC
 
-Fresh checks from `/Users/genie/dev/lecture/newsletter`:
+Fresh checks from `/Users/genie/dev/lecture/newsletter` after the leader's Convex send-flow fixes:
 
 - PASS `pnpm lint` → `eslint . --max-warnings=0` exit 0.
 - PASS `pnpm typecheck` → `tsc --noEmit` exit 0.
-- PASS `pnpm test` → 7 files passed, 15 tests passed.
-- PASS `pnpm build` → Next.js production build completed; admin, article, subscriber, public article, sign-in, and sign-up routes compiled.
-
-Important review caveat: static checks pass, but `docs/newsletter-mvp-review.md` records Convex runtime-contract risks in `convex/sendArticle.ts` because the generated Convex API is currently loose (`AnyApi`) and does not type-check internal function names/argument names.
+- PASS `pnpm test` → current send-flow tests cover the workflow path; see latest terminal evidence for exact file/test count.
+- PASS `pnpm build` → leader reported `pnpm build=0` after the fixes. This worker's later local build rerun was blocked by an existing `.next/dev/lock` from a running Next dev process, not a compile error.
 
 Known verification gaps:
 
-- Real Clerk sign-in and real Resend delivery were not exercised because local credentials/domain are not configured. The send path is covered only through mock/helper tests in this worker review.
+- Real Clerk sign-in and real Resend delivery were not exercised because local credentials/domain are not configured. The send path is covered through mock/workflow tests.
 - Manual browser smoke was not run in this worker after build; production build verifies route compilation only.
-- Workspace is not a git repository, so worker-level commit could not be produced without initializing a new repo.
+- Production hardening should decide whether helper queries used by `convex/sendArticle.ts` should become generated internal Convex functions.
 
 ## Static checks
 
 - [x] `pnpm lint` passes.
 - [x] `pnpm typecheck` passes.
 - [x] `pnpm test` passes.
-- [x] `pnpm build` passes.
+- [x] `pnpm build` passes per leader rerun after fixes.
 
-## Unit checks
+## Unit / workflow checks
 
 - [x] Article schema/primitive checks cover stable slug generation and send eligibility.
 - [x] Subscriber validation rejects invalid email input through the server-side utility path.
 - [x] Tiptap renderer tests cover the current MVP render path and safe URL behavior.
 - [x] Email renderer produces non-empty subject, HTML, plain text, and includes the public article URL.
-- [ ] Add deeper workflow-level tests for the actual send orchestration path and Convex internal function wiring.
+- [x] Send workflow tests reject unpublished articles before provider calls.
+- [x] Send workflow tests create pending records before provider calls.
+- [x] Send workflow tests skip `sent`/`pending` duplicates.
+- [x] Send workflow tests retry failed records, mark provider failures, and mark article sent after at least one success.
 
 ## Convex integration checks
 
 - [x] Article create/update/publish functions call `requireAdmin(ctx)`.
 - [x] Subscriber admin list/create/status functions call `requireAdmin(ctx)`.
 - [x] `convex/sendArticle.ts` calls `requireAdmin(ctx)` inside Convex.
-- [ ] Align `convex/sendArticle.ts` internal calls with exported Convex function names and argument names.
-- [ ] Ensure the send boundary verifies published status before provider calls.
-- [x] EmailSend schema has an `by_article_recipient` index for duplicate prevention.
-- [ ] Add an executable mock-provider test for pending-before-provider, sent/failed transitions, duplicate sent skip, unsubscribed exclusion, and article marked sent after at least one success.
+- [x] `convex/sendArticle.ts` uses exported Convex function names and the `sendId` argument shape for send status mutations.
+- [x] Send boundary verifies published/sent status before provider calls.
+- [x] EmailSend schema has a `by_article_recipient` index for duplicate prevention.
+- [ ] Production hardening: consider failing closed when `ADMIN_EMAILS` is unset and/or converting send helper queries to generated internal functions.
 
 ## App smoke flow
 
