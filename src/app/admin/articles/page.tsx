@@ -32,7 +32,7 @@ export default function ArticlesPage() {
                   {(article.status === "published" || article.status === "sent") ? <Link className="button secondary" href={`/articles/${article.slug}`}>Public</Link> : null}
                 </div>
               </div>
-              <SendArticleButton articleId={article._id} disabled={article.status === "draft"} />
+              <SendArticleButton articleId={article._id} disabled={article.status !== "published"} />
               <SendStatusPanel articleId={article._id} />
             </article>
           ))}

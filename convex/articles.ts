@@ -4,13 +4,19 @@ import { requireAdmin } from "./lib/auth";
 
 export const list = queryGeneric({
   args: {},
-  handler: async (ctx) => ctx.db.query("articles").order("desc").collect(),
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+    return ctx.db.query("articles").order("desc").collect();
+  },
 });
 
 
 export const get = queryGeneric({
   args: { articleId: v.id("articles") },
-  handler: async (ctx, args) => ctx.db.get(args.articleId),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    return ctx.db.get(args.articleId);
+  },
 });
 
 export const getBySlug = queryGeneric({
@@ -31,7 +37,10 @@ export const getPublicBySlug = queryGeneric({
 
 export const getForSend = queryGeneric({
   args: { articleId: v.id("articles") },
-  handler: async (ctx, args) => ctx.db.get(args.articleId),
+  handler: async (ctx, args) => {
+    const article = await ctx.db.get(args.articleId);
+    return article?.status === "published" ? article : null;
+  },
 });
 
 export const create = mutationGeneric({

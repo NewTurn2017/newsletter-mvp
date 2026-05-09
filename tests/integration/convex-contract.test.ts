@@ -6,10 +6,12 @@ describe("Convex newsletter contract", () => {
     const source = readFileSync("convex/sendArticle.ts", "utf8");
     expect(source).toContain("export const sendArticle");
     expect(source).toContain("await requireAdmin(ctx)");
+    expect(source).toContain("sendArticleWorkflow");
     expect(source).toContain("sendNewsletterEmail");
-    expect(source).toContain("ensurePendingSend");
-    expect(source).toContain("markSendSent");
-    expect(source).toContain("markSendFailed");
+    expect(source).toContain("api.articles.getForSend");
+    expect(source).toContain("api.emailSends.ensurePending");
+    expect(source).toContain("api.emailSends.markSent");
+    expect(source).toContain("api.emailSends.markFailed");
   });
 
   it("guards Convex write/publish/send mutations with requireAdmin", () => {

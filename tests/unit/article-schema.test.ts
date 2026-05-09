@@ -8,9 +8,9 @@ describe("article primitives", () => {
     expect(slugify("뉴스레터 첫 글")).toBe("뉴스레터-첫-글");
   });
 
-  it("only allows published or sent articles through send eligibility", () => {
+  it("only allows published articles through send eligibility", () => {
     expect(canSendArticle("draft")).toBe(false);
     expect(canSendArticle("published")).toBe(true);
-    expect(canSendArticle("sent")).toBe(true);
+    expect(canSendArticle("sent")).toBe(false);
   });
 });

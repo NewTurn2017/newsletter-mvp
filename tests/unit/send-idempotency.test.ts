@@ -16,9 +16,9 @@ describe("send idempotency helpers", () => {
     expect(shouldCallProvider({ status: "sent" })).toBe(false);
   });
 
-  it("keeps send eligibility constrained to published/sent articles", () => {
+  it("keeps send eligibility constrained to published articles", () => {
     expect(canSendArticle("draft")).toBe(false);
     expect(canSendArticle("published")).toBe(true);
-    expect(canSendArticle("sent")).toBe(true);
+    expect(canSendArticle("sent")).toBe(false);
   });
 });

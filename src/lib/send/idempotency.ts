@@ -15,5 +15,5 @@ export function shouldCallProvider(existing: ExistingEmailSend | null | undefine
 }
 
 export function canSendArticle(status: string): boolean {
-  return status === "published" || status === "sent";
+  return status === "published";
 }

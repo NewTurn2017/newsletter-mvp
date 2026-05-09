@@ -23,7 +23,7 @@ export function PreviewArticleClient({ articleId }: { articleId: string }) {
         <h1>{article.title}</h1>
         {article.excerpt ? <p className="helper">{article.excerpt}</p> : null}
         {isTiptapDoc(article.editorJson) ? <ArticleRenderer doc={article.editorJson} /> : <p>Invalid editor content.</p>}
-        <SendArticleButton articleId={article._id} disabled={article.status === "draft"} />
+        <SendArticleButton articleId={article._id} disabled={article.status !== "published"} />
       </section>
       <SendStatusPanel articleId={article._id} />
     </main>

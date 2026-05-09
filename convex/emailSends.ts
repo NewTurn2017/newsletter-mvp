@@ -10,6 +10,14 @@ export const listByArticle = queryGeneric({
   },
 });
 
+export const findForArticleRecipient = queryGeneric({
+  args: { articleId: v.id("articles"), recipientEmail: v.string() },
+  handler: async (ctx, args) => {
+    const sends = await ctx.db.query("emailSends").withIndex("by_article", (q) => q.eq("articleId", args.articleId)).collect();
+    return sends.find((send) => send.recipientEmail === args.recipientEmail) ?? null;
+  },
+});
+
 export const ensurePending = mutationGeneric({
   args: { articleId: v.id("articles"), subscriberId: v.optional(v.id("subscribers")), recipientEmail: v.string() },
   handler: async (ctx, args) => {
