@@ -1,3 +1,5 @@
+const ADMIN_EMAIL = "genie@codewithgenie.com";
+
 type AuthContext = {
   auth: {
     getUserIdentity(): Promise<{ email?: string | null } | null>;
@@ -7,11 +9,7 @@ type AuthContext = {
 export async function requireAdmin(ctx: AuthContext) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity?.email) throw new Error("Unauthorized");
-  const configuredAdmins = (process.env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((email: string) => email.trim().toLowerCase())
-    .filter(Boolean);
-  if (configuredAdmins.length > 0 && !configuredAdmins.includes(identity.email.toLowerCase())) {
+  if (identity.email.toLowerCase() !== ADMIN_EMAIL) {
     throw new Error("Admin access required");
   }
   return identity;

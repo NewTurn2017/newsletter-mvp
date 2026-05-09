@@ -1,5 +1,6 @@
 import { mutationGeneric, queryGeneric } from "convex/server";
 import { v } from "convex/values";
+import type { MutationCtx } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,18 +23,27 @@ export const listActive = queryGeneric({
   handler: async (ctx) => ctx.db.query("subscribers").withIndex("by_status", (q) => q.eq("status", "active")).collect(),
 });
 
+async function upsertActiveSubscriber(ctx: MutationCtx, inputEmail: string) {
+  const email = normalizeEmail(inputEmail);
+  const existing = await ctx.db.query("subscribers").withIndex("by_email", (q) => q.eq("email", email)).unique();
+  const now = Date.now();
+  if (existing) {
+    await ctx.db.patch(existing._id, { status: "active", updatedAt: now });
+    return existing._id;
+  }
+  return ctx.db.insert("subscribers", { email, status: "active", createdAt: now, updatedAt: now });
+}
+
+export const subscribe = mutationGeneric({
+  args: { email: v.string() },
+  handler: async (ctx, args) => upsertActiveSubscriber(ctx, args.email),
+});
+
 export const create = mutationGeneric({
   args: { email: v.string() },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const email = normalizeEmail(args.email);
-    const existing = await ctx.db.query("subscribers").withIndex("by_email", (q) => q.eq("email", email)).unique();
-    const now = Date.now();
-    if (existing) {
-      await ctx.db.patch(existing._id, { status: "active", updatedAt: now });
-      return existing._id;
-    }
-    return ctx.db.insert("subscribers", { email, status: "active", createdAt: now, updatedAt: now });
+    return upsertActiveSubscriber(ctx, args.email);
   },
 });
 

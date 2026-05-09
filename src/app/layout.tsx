@@ -4,8 +4,8 @@ import { Providers } from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "뉴스레터 MVP",
-  description: "한 브랜드의 뉴스레터 작성, 공개, 메일 발송을 위한 MVP입니다.",
+  title: "YOYO AI 뉴스레터",
+  description: "AI와 자동화 인사이트를 이메일로 받아보는 뉴스레터입니다.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -14,12 +14,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <Providers>
           <header className="site-header">
-            <Link href="/" className="brand">뉴스레터 MVP</Link>
-            <nav>
-              <Link href="/admin">관리자</Link>
-              <Link href="/admin/articles">글 관리</Link>
-              <Link href="/admin/subscribers">구독자</Link>
-            </nav>
+            <Link href="/" className="brand">YOYO AI 뉴스레터</Link>
           </header>
           {children}
         </Providers>

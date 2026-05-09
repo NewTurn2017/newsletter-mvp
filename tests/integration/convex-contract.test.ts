@@ -71,4 +71,22 @@ describe("Convex newsletter contract", () => {
     expect(renderer).toContain("safeImageWidth");
   });
 
+  it("keeps public users limited to subscription while admin remains single-email only", () => {
+    const auth = readFileSync("convex/lib/auth.ts", "utf8");
+    const subscribers = readFileSync("convex/subscribers.ts", "utf8");
+    const home = readFileSync("src/app/page.tsx", "utf8");
+    const layout = readFileSync("src/app/layout.tsx", "utf8");
+    const adminLayout = readFileSync("src/app/admin/layout.tsx", "utf8");
+    const form = readFileSync("src/components/subscribers/SubscriberForm.tsx", "utf8");
+
+    expect(auth).toContain('const ADMIN_EMAIL = "genie@codewithgenie.com"');
+    expect(adminLayout).toContain('email !== ADMIN_EMAIL');
+    expect(adminLayout).toContain('redirect("/")');
+    expect(subscribers).toContain("export const subscribe");
+    expect(form).toContain("api.subscribers.subscribe");
+    expect(home).toContain("<SubscriberForm />");
+    expect(home).not.toContain('/admin/articles/new');
+    expect(layout).not.toContain('href="/admin"');
+  });
+
 });
