@@ -14,3 +14,8 @@ coverage
 .omx/tmux-hook.json
 .omx/hud-config.json
 .omx/reports
+.agents/
+AGENTS.md
+CLAUDE.md
+skills-lock.json
+convex/_generated/ai/

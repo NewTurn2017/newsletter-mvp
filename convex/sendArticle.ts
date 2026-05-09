@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { api } from "./_generated/api";
 import { action } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 import { requireAdmin } from "./lib/auth";
 import { sendNewsletterEmail } from "./lib/email";
 import { sendArticleWorkflow } from "../src/lib/email/sendArticleWorkflow";
@@ -11,7 +12,7 @@ export const sendArticle = action({
     await requireAdmin(ctx);
     const publicBaseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-    return sendArticleWorkflow(
+    return sendArticleWorkflow<Id<"articles">, Id<"subscribers">, Id<"emailSends">>(
       {
         getArticle: async () => ctx.runQuery(api.articles.getForSend, { articleId: args.articleId }),
         listActiveSubscribers: async () => ctx.runQuery(api.subscribers.listActive, {}),

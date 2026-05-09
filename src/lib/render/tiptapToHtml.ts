@@ -1,6 +1,6 @@
-import type { TiptapMark, TiptapNode } from "@/lib/render/tiptapTypes";
-import { isTiptapDoc } from "@/lib/render/tiptapTypes";
-import { escapeHtml, safeImageUrl, safeUrl } from "@/lib/render/sanitize";
+import type { TiptapMark, TiptapNode } from "./tiptapTypes";
+import { isTiptapDoc } from "./tiptapTypes";
+import { escapeHtml, safeImageUrl, safeUrl } from "./sanitize";
 
 const supportedNodes = new Set(["doc", "paragraph", "heading", "text", "bulletList", "orderedList", "listItem", "blockquote", "hardBreak", "image"]);
 const supportedMarks = new Set(["bold", "italic", "link"]);

@@ -1,6 +1,6 @@
-import { tiptapToHtml } from "@/lib/render/tiptapToHtml";
-import { tiptapToPlainText } from "@/lib/render/tiptapToPlainText";
-import { escapeHtml } from "@/lib/render/sanitize";
+import { tiptapToHtml } from "../render/tiptapToHtml";
+import { tiptapToPlainText } from "../render/tiptapToPlainText";
+import { escapeHtml } from "../render/sanitize";
 
 export type RenderEmailInput = {
   title: string;

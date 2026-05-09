@@ -1,6 +1,6 @@
-import type { TiptapMark, TiptapNode } from "@/lib/render/tiptapTypes";
-import { isTiptapDoc } from "@/lib/render/tiptapTypes";
-import { safeUrl } from "@/lib/render/sanitize";
+import type { TiptapMark, TiptapNode } from "./tiptapTypes";
+import { isTiptapDoc } from "./tiptapTypes";
+import { safeUrl } from "./sanitize";
 
 function applyTextMarks(text: string, marks: TiptapMark[] = []): string {
   const link = marks.find((mark) => mark.type === "link");
